@@ -26,12 +26,6 @@ class Base
         cout << "Конструктор с параметром класса Base вызван" << endl;
     }
 
-    Base (Base& other)
-    {
-        fio = other.fio;
-        cout << "Конструктор копирования класса Base вызван" << endl;
-    }
-
     string get_fio()
     {
         return fio;
