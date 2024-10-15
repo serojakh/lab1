@@ -12,6 +12,7 @@ class Base
     public:
     virtual void input() = 0;
     virtual void output(ostream& out) = 0;
+    virtual void inputFromFile(istream& in) = 0;
 
     Base ()
     {
@@ -55,30 +56,17 @@ class Poet : public Base
     private:
     int date_of_birth;
     int date_of_death;
+    string works;
 
     public:
     Poet ()
     {
         date_of_birth = 0;
         date_of_death = 0;
+        works = "";
         cout << "Конструктор по умолчанию класса Poet вызван" << endl;
     }
-
-    Poet (int date_of_birth, int date_of_death) 
-    {
-        this->date_of_birth = date_of_birth; 
-        this->date_of_death = date_of_death; 
-        cout << "Конструткор с параметрами класса Poet вызван" << endl; 
-    }
-
-    Poet (Poet& other) 
-    {
-        date_of_birth = other.date_of_birth;
-        date_of_death = other.date_of_death;
-        cout << "Конструткор копирования класса Poet вызван" << endl; 
-    }
     
-
     ~Poet () 
     {
         cout << "Деструктор класса Poet вызван" << endl;
@@ -88,6 +76,7 @@ class Poet : public Base
     void input()
     {
         string fio;
+        string works;
         cout << "Введите ФИО поэта: ";
         cin.ignore();  
         getline(cin, fio); 
@@ -111,12 +100,18 @@ class Poet : public Base
                 cin >> date_of_death;
             }
         }
+
+        cout << "Введите несколько приозведений поэта: ";
+        cin.ignore();
+        getline(cin, works);
+        cout << endl;
     }
 
 
     void output(ostream& out)
     {
         out << "Фамилия, имя и отчество поэта: " << get_fio() << endl;
+
         if (date_of_death == 0)
         {
             out << "Годы жизни поэта: " << date_of_birth << " - " << "настоящее время" << endl;
@@ -125,6 +120,21 @@ class Poet : public Base
         {
             out << "Годы жизни поэта: " << date_of_birth << " - " << date_of_death << endl;
         }
+
+        out << "Работы поэта: " << works << endl;
+    }
+
+    void inputFromFile(istream& in)
+    {
+        string fio;
+        getline(in, fio);
+        set_fio(fio);
+
+        in >> date_of_birth;
+        in >> date_of_death;
+        in.ignore();
+
+        getline(in, works);
     }
 
 };
@@ -135,6 +145,7 @@ class Romanist : public Base
     int date_of_birth;
     int date_of_death;
     string biography;
+    string works;
 
     public:
     Romanist ()
@@ -142,26 +153,10 @@ class Romanist : public Base
         date_of_birth = 0;
         date_of_death = 0;
         biography = "";
+        works = "";
         cout << "Конструктор по умолчанию класса Romanist вызван" << endl;
     }
-
-    Romanist (int date_of_birth, int date_of_death, string biography) 
-    {
-        this->date_of_birth = date_of_birth; 
-        this->date_of_death = date_of_death; 
-        this->biography = biography;
-        cout << "Конструткор с параметрами класса Romanist вызван" << endl; 
-    }
-
-    Romanist (Romanist& other) 
-    {
-        date_of_birth = other.date_of_birth;
-        date_of_death = other.date_of_death;
-        biography = other.biography;
-        cout << "Конструткор копирования класса Romanist вызван" << endl; 
-    }
     
-
     ~Romanist () 
     {
         cout << "Деструктор класса Romanist вызван" << endl;
@@ -195,9 +190,16 @@ class Romanist : public Base
             }
         }
 
+
+        cout << "Введите несколько приозведений романиста: ";
+        cin.ignore();
+        getline(cin, works);
+
         cout << "Введите краткую биографию романиста: ";
         cin.ignore();
         getline(cin, biography);
+
+        cout << endl;
     }
 
 
@@ -213,16 +215,37 @@ class Romanist : public Base
             out << "Годы жизни романиста: " << date_of_birth << " - " << date_of_death << endl;
         }
 
+        out << "Работы романиста: " << works << endl;
+
         out << "Краткая биография: " << biography << endl;
     }
 
+    void inputFromFile(istream& in)
+    {
+        string fio;
+        getline(in, fio);
+        set_fio(fio);
+
+        in >> date_of_birth;
+        in >> date_of_death;
+        in.ignore();
+
+        getline(in, works);
+        getline(in, biography);
+    }
 };
 
 class Fantast : public Base
 {
+    private:
+    string works;
+    string films;
+
     public:
     Fantast ()
     {
+        works = "";
+        films = "";
         cout << "Конструктор по умолчанию класса Fantast вызван" << endl;
     }
 
@@ -240,14 +263,34 @@ class Fantast : public Base
         getline(cin, fio); 
         set_fio(fio); 
 
+        cout << "Введите нескольок работ фантаста: ";
+        cin >> works;
+
+        cout << "По каким работам были сняты фильмы? ";
+        cin >> films;
+
+        cout << endl;
     }
 
 
     void output(ostream& out)
     {
         out << "Фамилия, имя и отчество фантаста: " << get_fio() << endl;
+
+        out << "Работы фантаста: " << works << endl;
+
+        out << "Работы, по которым были сняты фильмы: " << films << endl;
     }
 
+    void inputFromFile(istream& in)
+    {
+        string fio;
+        getline(in, fio);
+        set_fio(fio);
+
+        getline(in, works);
+        getline(in, films);
+    }
 };
 
 class Keeper
@@ -288,36 +331,31 @@ class Keeper
         count ++;
     }
 
-    void remove(int index)
-{
-    if (index < 0 || index >= count)
+    void remove (int index)
     {
-        cout << "Введенный индекс некорректен!" << endl;
-        return;
-    }
-
-    // Создаем новый массив меньшего размера
-    Base** temp = new Base*[count - 1];
-    
-    // Копируем все элементы, кроме удаляемого
-    for (int i = 0, j = 0; i < count; i++)
-    {
-        if (i != index)
+        if (index < 0 || index >= count)
         {
-            temp[j++] = items[i];
+            cout << "Введенный индекс некорректен!" << endl;
+            return;
         }
-        else
-        {
-            delete items[i]; // Удаляем элемент
-        }
-    }
-    
-    // Освобождаем старый массив и уменьшаем количество элементов
-    delete[] items;
-    items = temp;
-    count--;
-}
 
+        Base** temp = new Base*[count - 1];
+        for (int i = 0, j = 0; i < count; i++)
+        {
+            if (i != index)
+            {
+                temp[j++] = items[i];
+            }
+            else
+            {
+                delete items[i]; // Удаляем элемент
+            }
+        }
+
+        delete[] items;
+        items = temp;
+        count--;
+    }
 
     void display() 
     {
@@ -329,7 +367,7 @@ class Keeper
         {
             for (int i = 0; i < count; i++) 
             {
-                cout << "Объект " << i + 1 << ":" << endl;
+                cout << endl << "Объект " << i + 1 << ":" << endl;
                 items[i]->output(cout);
             }
         }
@@ -355,8 +393,52 @@ class Keeper
 
         file.close();
         cout << "Данные сохранены в файл: " << filename << endl;
-}
+    }
     
+    void loadFromFile(const string& filename)
+    {
+        ifstream file(filename);
+
+        if (!file.is_open())
+        {
+            cout << "Не удалось открыть файл для чтения." << endl;
+            return;
+        }
+
+        int count;
+        file >> count;
+        file.ignore();
+
+        for (int i = 0; i < count; i++)
+        {
+            string type;
+            getline(file, type);
+
+            Base* obj = nullptr;
+
+            if (type.find("Поэт") != string::npos)
+            {
+                obj = new Poet();
+            }
+            else if (type.find("Романист") != string::npos)
+            {
+                obj = new Romanist();
+            }
+            else if (type.find("Фантаст") != string::npos)
+            {
+                obj = new Fantast();
+            }
+
+             if (obj)
+            {
+                obj->inputFromFile(file);
+                add(obj);
+            }
+        }
+
+        file.close();
+        cout << "Данные загружены из файла: " << filename << endl;
+    }
 };
 
 int main ()
@@ -373,13 +455,14 @@ int main ()
         cout << "4. Показать содержимое класса Keeper" << endl;
         cout << "5. Удалить объект из класса Keeper" << endl;
         cout << "6. Сохранить содержимое класса Keeper в файл" << endl;
-        cout << "7. лоде" << endl;
+        cout << "7. Загрузить содержимое класса Keeper из файла" << endl;
         cout << "8. Выход" << endl;
         cout << "Выберите действие: ";
         cin >> choice;
         
         if (choice == 1)
         {
+            cout << endl;
             Poet* poet = new Poet();
             poet->input();
             keeper.add(poet);
@@ -387,6 +470,7 @@ int main ()
 
         else if (choice == 2)
         {
+            cout << endl;
             Romanist* romanist = new Romanist();
             romanist->input();
             keeper.add(romanist);
@@ -394,6 +478,7 @@ int main ()
 
         else if (choice == 3)
         {
+            cout << endl;
             Fantast* fantast = new Fantast();
             fantast->input();
             keeper.add(fantast);
@@ -418,6 +503,14 @@ int main ()
             cout << "Введите имя файла для сохранения: ";
             cin >> filename;
             keeper.saveToFile(filename);
+        }
+
+        else if (choice == 7)
+        {
+            string filename;
+            cout << "Введите имя файла для загрузки: ";
+            cin >> filename;
+            keeper.loadFromFile(filename);
         }
 
         else if (choice == 8)
